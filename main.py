@@ -26,7 +26,7 @@ index = 0
 
 def normalize(text):
     cleaned = text.strip().lower()
-    cleaned = re.sub(r"[.,]", "", cleaned)
+    cleaned = re.sub(r"[.,№]", "", cleaned)
     return cleaned
 
 

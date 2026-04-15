@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <style>
+        body { font-family: Arial; background:#f4f6f8; }
+        .container { max-width:700px; margin:50px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px #ccc; }
+        .correct { color:green; }
+        .wrong { color:red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Резултат: {{ score }} / {{ total }}</h2>
+
+        {% for a in answers %}
+            <hr>
+            <p><b>Въпрос:</b> {{ a.question }}</p>
+            <p><b>Твоят отговор:</b> {{ a.user.lower() }}</p>
+            <p><b>Правилен:</b> {{ a.correct[0] }}</p>
+        {% endfor %}
+
+        <a href="/">⬅ Назад</a>
+    </div>
+</body>
+</html>

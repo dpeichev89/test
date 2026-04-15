@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <style>
+        body { font-family: Arial; background:#f4f6f8; }
+        .container { max-width:700px; margin:50px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px #ccc; }
+        .item { margin-bottom:20px; }
+        .item h3 { margin-bottom:8px; }
+        .correct { color:green; font-weight:bold; }
+        .wrong { color:red; font-weight:bold; }
+        .answer-row { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+        .answer-label { width:100%; }
+        .badge { display:inline-block; padding:4px 10px; border-radius:12px; color:white; font-size:0.9em; }
+        .badge.correct { background:#28a745; }
+        .badge.wrong { background:#dc3545; }
+        .answer-box { background:#f8f9fa; padding:12px; border-radius:8px; width:100%; }
+        .answer-box strong { display:block; margin-bottom:4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Резултат: {{ score }} / {{ total }}</h2>
+
+        {% for a in answers %}
+            {% set is_correct = a.user.lower() in a.correct %}
+            <div class="item">
+                <h3>{{ loop.index }}. {{ a.question }}</h3>
+                <div class="badge {{ 'correct' if is_correct else 'wrong' }}">{{ '✔' if is_correct else '✖' }} {{ 'Правилен' if is_correct else 'Грешен' }}</div>
+                <div class="answer-row">
+                    <div class="answer-box">
+                        <strong>Твоят отговор:</strong>
+                        <span>{{ a.user }}</span>
+                    </div>
+                    <div class="answer-box">
+                        <strong>Правилен отговор:</strong>
+                        <span>{{ a.correct[0] }}</span>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+
+        <a href="/">⬅ Назад</a>
+    </div>
+</body>
+</html>

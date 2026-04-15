@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <style>
+        body { font-family: Arial; background:#f4f6f8; text-align:center; }
+        .box { margin:50px auto; padding:30px; background:white; width:360px; border-radius:10px; box-shadow:0 0 10px #ccc; }
+        label { display:block; text-align:left; margin:12px 0; }
+        input[type="radio"] { margin-right:10px; }
+        button { margin-top:20px; padding:12px 20px; width:100%; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; }
+        .source-count { color: #555; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Избери тема за изпита</h2>
+        <form action="/start" method="post">
+            {% for source in sources %}
+                <label>
+                    <input type="radio" name="source" value="{{ source.key }}" {% if source.key == default_source %}checked{% endif %}>
+                    {{ source.label }} <span class="source-count">({{ counts[source.key] }} въпроса)</span>
+                </label>
+            {% endfor %}
+            
+            <label style="margin-top:45px;">
+                Изберете на колко въпроса искате да отговаряте:
+                <input type="number" name="count" value="{{ default_count }}" min="1" max="50" style="width:100%; padding:10px; margin-top:8px; box-sizing:border-box;" required>
+            </label>
+            <button type="submit">▶ Стартирай тест</button>
+        </form>
+    </div>
+</body>
+</html>

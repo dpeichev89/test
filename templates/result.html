@@ -1,21 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Result</title>
     <style>
-        body { font-family: Arial; background:#f4f6f8; }
-        .container { max-width:700px; margin:50px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px #ccc; }
-        .item { margin-bottom:20px; }
-        .item h3 { margin-bottom:8px; }
-        .correct { color:green; font-weight:bold; }
-        .wrong { color:red; font-weight:bold; }
-        .answer-row { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-        .answer-label { width:100%; }
-        .badge { display:inline-block; padding:4px 10px; border-radius:12px; color:white; font-size:0.9em; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background:#f4f6f8;
+            margin: 0;
+            padding: 10px;
+        }
+        .container { 
+            max-width:700px; 
+            margin: 10px auto; 
+            background:white; 
+            padding: 16px; 
+            border-radius:10px; 
+            box-shadow:0 0 10px #ccc;
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.3em;
+            text-align: center;
+        }
+        .item { 
+            margin-bottom:20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .item:last-child { border-bottom: none; }
+        .item h3 { 
+            margin: 0 0 12px 0;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+        .badge { 
+            display:inline-block; 
+            padding: 6px 12px; 
+            border-radius:12px; 
+            color:white; 
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
         .badge.correct { background:#28a745; }
         .badge.wrong { background:#dc3545; }
-        .answer-box { background:#f8f9fa; padding:12px; border-radius:8px; width:100%; }
-        .answer-box strong { display:block; margin-bottom:4px; }
+        .answer-row { 
+            display:flex; 
+            flex-direction: column;
+            gap: 10px;
+        }
+        .answer-box { 
+            background:#f8f9fa; 
+            padding: 12px; 
+            border-radius:6px;
+            border-left: 4px solid #007bff;
+        }
+        .answer-box strong { 
+            display:block; 
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .answer-box span {
+            display: block;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        a { 
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.2s;
+            min-height: 44px;
+            line-height: 44px;
+        }
+        a:active { background: #0056b3; }
+        
+        @media (max-width: 600px) {
+            .container { padding: 12px; margin: 5px auto; }
+            h2 { font-size: 1.1em; }
+            .item { margin-bottom: 16px; padding-bottom: 16px; }
+            .item h3 { font-size: 0.95em; }
+            .answer-box { padding: 10px; }
+            a { padding: 10px 20px; min-height: 40px; line-height: 40px; }
+        }
     </style>
 </head>
 <body>
@@ -23,10 +99,9 @@
         <h2>Резултат: {{ score }} / {{ total }}</h2>
 
         {% for a in answers %}
-            {% set is_correct = a.user.lower() in a.correct %}
             <div class="item">
                 <h3>{{ loop.index }}. {{ a.question }}</h3>
-                <div class="badge {{ 'correct' if is_correct else 'wrong' }}">{{ '✔' if is_correct else '✖' }} {{ 'Правилен' if is_correct else 'Грешен' }}</div>
+                <div class="badge {{ 'correct' if a.is_correct else 'wrong' }}">{{ '✔ Правилен' if a.is_correct else '✖ Грешен' }}</div>
                 <div class="answer-row">
                     <div class="answer-box">
                         <strong>Твоят отговор:</strong>
@@ -34,14 +109,15 @@
                     </div>
                     <div class="answer-box">
                         <strong>Правилен отговор:</strong>
-                        <span>{{ a.correct[0] }}</span>
+                        <span>{{ a.correct }}</span>
                     </div>
                 </div>
             </div>
-            <hr>
         {% endfor %}
 
-        <a href="/">⬅ Назад</a>
+        <div style="text-align: center;">
+            <a href="/">⬅ Назад</a>
+        </div>
     </div>
 </body>
 </html>

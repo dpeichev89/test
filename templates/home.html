@@ -1,14 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
     <style>
-        body { font-family: Arial; background:#f4f6f8; text-align:center; }
-        .box { margin:50px auto; padding:30px; background:white; width:360px; border-radius:10px; box-shadow:0 0 10px #ccc; }
-        label { display:block; text-align:left; margin:12px 0; }
-        input[type="radio"] { margin-right:10px; }
-        button { margin-top:20px; padding:12px 20px; width:100%; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; }
-        .source-count { color: #555; font-size: 0.95em; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+            background:#f4f6f8; 
+            text-align:center;
+            margin: 0;
+            padding: 10px;
+        }
+        .box { 
+            margin: 20px auto; 
+            padding: 20px; 
+            background:white; 
+            max-width: 500px;
+            width: 100%;
+            border-radius:10px; 
+            box-shadow:0 0 10px #ccc; 
+        }
+        h2 { margin: 0 0 20px 0; font-size: 1.3em; }
+        label { 
+            display:block; 
+            text-align:left; 
+            margin:15px 0; 
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        label:hover { background: #f0f0f0; }
+        input[type="radio"] { 
+            margin-right:12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .source-count { 
+            color: #666; 
+            font-size: 0.9em; 
+            display: block;
+            margin-left: 30px;
+            margin-top: 4px;
+        }
+        input[type="number"] {
+            width:100%;
+            padding: 12px;
+            margin-top:8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button { 
+            margin-top:20px; 
+            padding: 14px 20px; 
+            width:100%; 
+            background:#007bff; 
+            color:white; 
+            border:none; 
+            border-radius:6px; 
+            cursor:pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+            min-height: 44px;
+        }
+        button:active { background:#0056b3; }
+        @media (max-width: 600px) {
+            .box { padding: 16px; margin: 10px auto; }
+            h2 { font-size: 1.1em; }
+            label { margin: 12px 0; padding: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -18,13 +83,13 @@
             {% for source in sources %}
                 <label>
                     <input type="radio" name="source" value="{{ source.key }}" {% if source.key == default_source %}checked{% endif %}>
-                    {{ source.label }} <span class="source-count">({{ counts[source.key] }} въпроса)</span>
+                    <span>{{ source.label }} <span class="source-count">({{ counts[source.key] }} въпроса)</span></span>
                 </label>
             {% endfor %}
             
-            <label style="margin-top:45px;">
-                Изберете на колко въпроса искате да отговаряте:
-                <input type="number" name="count" value="{{ default_count }}" min="1" max="50" style="width:100%; padding:10px; margin-top:8px; box-sizing:border-box;" required>
+            <label style="margin-top:30px; display:block; text-align:left;">
+                <span>Брой въпроси:</span>
+                <input type="number" name="count" value="{{ default_count }}" min="1" max="50" required>
             </label>
             <button type="submit">▶ Стартирай тест</button>
         </form>

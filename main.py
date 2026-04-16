@@ -22,6 +22,7 @@ source_counts = {}
 quiz_questions = []
 user_answers = []
 index = 0
+all_questions = []  # Store all loaded questions for generating wrong options
 
 
 def normalize(text):
@@ -40,7 +41,8 @@ def load_csv(file_path="questions.csv"):
 
         questions.append({
             "question": row["Въпроси"],
-            "answers": [normalize(a) for a in answers]
+            "answers": [normalize(a) for a in answers],
+            "raw_answers": [a.strip() for a in answers]  # Keep raw answers for display
         })
 
     return questions
@@ -75,7 +77,7 @@ def home(request: Request):
 
 @app.post("/start")
 def start(source: str = Form("questions"), count: int = Form(3)):
-    global quiz_questions, user_answers, index
+    global quiz_questions, user_answers, index, all_questions
 
     selected_source = next((item for item in source_files if item["key"] == source), source_files[0])
     try:
@@ -86,8 +88,32 @@ def start(source: str = Form("questions"), count: int = Form(3)):
     requested_count = max(1, count)
     sample_count = min(requested_count, len(questions))
     quiz_questions = random.sample(questions, sample_count) if questions else []
+    all_questions = questions  # Store all questions for generating wrong options
     user_answers = []
     index = 0
+
+    # Generate multiple choice options for each question
+    for i, q in enumerate(quiz_questions):
+        correct_answer = q["raw_answers"][0]  # First answer is the correct one
+        other_questions = [questions[j] for j in range(len(questions)) if questions[j]["question"] != q["question"]]
+        
+        # Get 3 random wrong answers from other questions
+        wrong_answers = []
+        if len(other_questions) >= 3:
+            wrong_options = random.sample(other_questions, 3)
+            wrong_answers = [opt["raw_answers"][0] for opt in wrong_options]
+        else:
+            wrong_answers = [opt["raw_answers"][0] for opt in other_questions]
+            # If we still don't have 3, use other answers from the same source
+            while len(wrong_answers) < 3 and len(q["raw_answers"]) > 1:
+                wrong_answers.append(q["raw_answers"][min(len(wrong_answers), len(q["raw_answers"]) - 1)])
+        
+        # Combine and shuffle options
+        all_options = [correct_answer] + wrong_answers[:3]
+        random.shuffle(all_options)
+        
+        quiz_questions[i]["options"] = all_options
+        quiz_questions[i]["correct_display"] = correct_answer
 
     return RedirectResponse("/quiz", status_code=303)
 
@@ -102,21 +128,26 @@ def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {
         "request": request,
         "question": q["question"],
+        "options": q["options"],
         "q_index": index + 1,
         "total": len(quiz_questions)
     })
 
 
 @app.post("/answer")
-def answer(user_answer: str = Form(...)):
+def answer(selected_option: str = Form(...)):
     global index
 
-    cleaned_answer = normalize(user_answer)
+    cleaned_answer = normalize(selected_option)
     correct = quiz_questions[index]["answers"]
+    correct_display = quiz_questions[index]["correct_display"]
     user_answers.append({
         "question": quiz_questions[index]["question"],
-        "user": cleaned_answer,
-        "correct": correct
+        "user": selected_option,
+        "user_normalized": cleaned_answer,
+        "correct": correct_display,
+        "correct_normalized": correct,
+        "is_correct": cleaned_answer in correct
     })
 
     index += 1
@@ -125,11 +156,7 @@ def answer(user_answer: str = Form(...)):
 
 @app.get("/result", response_class=HTMLResponse)
 def result(request: Request):
-    score = 0
-
-    for item in user_answers:
-        if normalize(item["user"]) in item["correct"]:
-            score += 1
+    score = sum(1 for item in user_answers if item["is_correct"])
 
     return templates.TemplateResponse("result.html", {
         "request": request,
@@ -139,19 +166,4 @@ def result(request: Request):
     })
 
 
-# ---------------- HTML ----------------
 
-# templates/home.html
-"""
-
-"""
-
-# templates/quiz.html
-"""
-
-"""
-
-# templates/result.html
-"""
-
-"""

@@ -6,91 +6,148 @@
     <title>Result</title>
     <style>
         * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background:#f4f6f8;
-            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 10px;
+            min-height: 100vh;
         }
         .container { 
-            max-width:700px; 
+            max-width: 700px; 
             margin: 10px auto; 
-            background:white; 
-            padding: 16px; 
-            border-radius:10px; 
-            box-shadow:0 0 10px #ccc;
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         h2 {
-            margin: 0 0 20px 0;
-            font-size: 1.3em;
+            margin: 0 0 28px 0;
+            font-size: 1.5em;
             text-align: center;
+            color: #333;
+            font-weight: 600;
         }
         .item { 
-            margin-bottom:20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #f0f0f0;
         }
         .item:last-child { border-bottom: none; }
         .item h3 { 
-            margin: 0 0 12px 0;
-            font-size: 1em;
-            line-height: 1.4;
+            margin: 0 0 14px 0;
+            font-size: 1.05em;
+            line-height: 1.5;
+            color: #333;
+            font-weight: 600;
         }
         .badge { 
-            display:inline-block; 
-            padding: 6px 12px; 
-            border-radius:12px; 
-            color:white; 
+            display: inline-block; 
+            padding: 8px 14px; 
+            border-radius: 20px; 
+            color: white; 
             font-size: 0.9em;
-            margin-bottom: 12px;
-            font-weight: bold;
+            margin-bottom: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
-        .badge.correct { background:#28a745; }
-        .badge.wrong { background:#dc3545; }
+        .badge.correct { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .badge.wrong { 
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        }
         .answer-row { 
-            display:flex; 
+            display: flex; 
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .answer-box { 
-            background:#f8f9fa; 
-            padding: 12px; 
-            border-radius:6px;
+            background: #f8f9fa; 
+            padding: 14px; 
+            border-radius: 8px;
             border-left: 4px solid #007bff;
+            transition: background 0.2s;
         }
         .answer-box strong { 
-            display:block; 
-            margin-bottom: 6px;
-            font-size: 0.9em;
-            color: #666;
+            display: block; 
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         .answer-box span {
             display: block;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            color: #333;
+            line-height: 1.5;
+        }
+        .back-btn-container {
+            text-align: center;
+            margin-top: 28px;
         }
         a { 
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: #007bff;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background 0.2s;
-            min-height: 44px;
-            line-height: 44px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 46px;
+            line-height: 46px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
-        a:active { background: #0056b3; }
+        a:active { 
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+        }
         
         @media (max-width: 600px) {
-            .container { padding: 12px; margin: 5px auto; }
+            body { padding: 8px; }
+            .container { 
+                padding: 16px; 
+                margin: 5px auto;
+                border-radius: 10px;
+            }
+            h2 { 
+                font-size: 1.3em; 
+                margin-bottom: 24px;
+            }
+            .item { 
+                margin-bottom: 20px; 
+                padding-bottom: 20px; 
+            }
+            .item h3 { 
+                font-size: 0.98em;
+                margin-bottom: 12px;
+            }
+            .badge { 
+                padding: 7px 12px;
+                font-size: 0.85em;
+                margin-bottom: 12px;
+            }
+            .answer-box { 
+                padding: 12px;
+                border-left-width: 3px;
+            }
+            .answer-box strong { font-size: 0.8em; margin-bottom: 6px; }
+            a { 
+                padding: 12px 24px; 
+                min-height: 44px; 
+                line-height: 44px;
+                font-size: 15px;
+            }
+        }
+        @media (max-width: 380px) {
+            .container { padding: 12px; }
             h2 { font-size: 1.1em; }
-            .item { margin-bottom: 16px; padding-bottom: 16px; }
-            .item h3 { font-size: 0.95em; }
+            .item h3 { font-size: 0.92em; }
             .answer-box { padding: 10px; }
-            a { padding: 10px 20px; min-height: 40px; line-height: 40px; }
+            a { padding: 10px 20px; min-height: 42px; line-height: 42px; font-size: 14px; }
         }
     </style>
 </head>
@@ -115,7 +172,7 @@
             </div>
         {% endfor %}
 
-        <div style="text-align: center;">
+        <div class="back-btn-container">
             <a href="/">⬅ Назад</a>
         </div>
     </div>

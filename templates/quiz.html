@@ -2,7 +2,10 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Quiz</title>
     <style>
         * { box-sizing: border-box; }
@@ -10,21 +13,26 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
-            padding: 10px;
+            padding: 8px;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .container { 
             max-width: 600px; 
-            margin: 5px auto; 
+            width: 100%;
             background: rgba(255, 255, 255, 0.95);
-            padding: 12px; 
+            padding: 16px; 
             border-radius: 12px; 
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
-            min-height: auto;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .timer { 
             color: #dc3545; 
@@ -93,43 +101,228 @@
             box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
         }
         
+        #feedback {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+            animation: feedbackPop 0.5s ease-out;
+            max-width: 90%;
+            min-width: 280px;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .feedback-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .feedback-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        #feedback button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 48px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        #feedback button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+        }
+        
         @media (max-width: 600px) {
-            body { padding: 6px; }
+            body { 
+                padding: 0; 
+                display: block;
+                background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+            }
             .container { 
-                padding: 10px; 
-                margin: 3px auto; 
-                border-radius: 10px;
+                max-width: 100vw;
+                width: 100vw;
+                height: 100vh;
+                max-height: 100vh;
+                padding: 16px; 
+                border-radius: 0;
+                margin: 0;
+                box-shadow: none;
+                background: rgba(255, 255, 255, 0.98);
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
             }
             .timer { 
-                font-size: 16px; 
-                padding: 8px; 
-                margin-bottom: 10px;
-                min-height: 38px;
+                font-size: 18px; 
+                padding: 12px 16px; 
+                margin-bottom: 16px;
+                min-height: 48px;
+                background: rgba(220, 53, 69, 0.1);
+                border: 1px solid rgba(220, 53, 69, 0.3);
             }
-            .question-header { margin-bottom: 6px; }
-            .question-header h3 { font-size: 11px; margin: 0 0 8px 0; }
-            .question-header p { font-size: 0.95em; line-height: 1.3; }
-            .options { gap: 8px; margin-top: 8px; grid-template-columns: 1fr 1fr; }
+            .question-header { 
+                margin-bottom: 20px; 
+                padding: 0 8px;
+            }
+            .question-header h3 { 
+                font-size: 16px; 
+                margin: 0 0 16px 0; 
+                color: #666;
+                font-weight: 600;
+            }
+            .question-header p { 
+                font-size: 1.2em; 
+                line-height: 1.5; 
+                font-weight: 600;
+                color: #1a202c;
+                margin: 0;
+                padding: 16px;
+                background: rgba(40, 167, 69, 0.05);
+                border-radius: 12px;
+                border-left: 4px solid #28a745;
+            }
+            .options { 
+                gap: 12px; 
+                margin-top: 20px; 
+                grid-template-columns: 1fr; 
+                padding: 0 8px;
+            }
             .option-btn { 
-                padding: 10px 8px; 
-                min-height: 40px; 
-                font-size: 13px;
+                padding: 16px 20px; 
+                min-height: 60px; 
+                font-size: 16px;
+                font-weight: 500;
+                text-align: left;
+                border-radius: 12px;
+                line-height: 1.4;
+                box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            }
+            #feedback {
+                padding: 24px 20px;
+                min-width: 300px;
+                max-width: 95%;
+                border-radius: 16px;
+            }
+            #feedback h3 {
+                font-size: 1.4em;
+                margin-bottom: 16px;
+            }
+            #feedback p {
+                font-size: 1em;
+                margin-bottom: 24px;
+            }
+            #feedback button {
+                padding: 12px 24px;
+                font-size: 16px;
+                min-height: 48px;
             }
         }
         @media (max-width: 380px) {
-            body { padding: 4px; }
-            .container { padding: 8px; margin: 2px auto; }
-            .timer { font-size: 14px; padding: 6px; margin-bottom: 8px; min-height: 36px; }
-            .question-header { margin-bottom: 4px; }
-            .question-header h3 { font-size: 10px; margin: 0 0 6px 0; }
-            .question-header p { font-size: 0.9em; line-height: 1.2; }
-            .options { gap: 6px; margin-top: 6px; grid-template-columns: 1fr 1fr; }
-            .option-btn { padding: 8px 6px; min-height: 38px; font-size: 12px; }
+            .container { 
+                padding: 12px;
+                height: 100vh;
+                max-height: 100vh;
+            }
+            .timer { 
+                font-size: 16px; 
+                padding: 10px 14px; 
+                margin-bottom: 14px; 
+                min-height: 44px;
+            }
+            .question-header { 
+                margin-bottom: 16px; 
+                padding: 0 4px;
+            }
+            .question-header h3 { 
+                font-size: 14px; 
+                margin: 0 0 12px 0; 
+            }
+            .question-header p { 
+                font-size: 1.1em; 
+                line-height: 1.4; 
+                padding: 14px;
+                border-radius: 10px;
+            }
+            .options { 
+                gap: 10px; 
+                margin-top: 16px; 
+                padding: 0 4px;
+            }
+            .option-btn { 
+                padding: 14px 16px; 
+                min-height: 56px; 
+                font-size: 15px;
+                border-radius: 10px;
+            }
+            #feedback {
+                padding: 20px 16px;
+                min-width: 280px;
+                max-width: 96%;
+                border-radius: 14px;
+            }
+            #feedback h3 {
+                font-size: 1.3em;
+                margin-bottom: 14px;
+            }
+            #feedback p {
+                font-size: 0.95em;
+                margin-bottom: 20px;
+            }
+            #feedback button {
+                padding: 10px 20px;
+                font-size: 15px;
+                min-height: 44px;
+            }
         }
     </style>
 
     <script>
         let time = 600;
+        let feedbackShown = false;
+        let currentMode = "{{ mode }}";
+        let correctAnswer = "{{ correct_answer }}";
+        
+        function normalize(text) {
+            let cleaned = text.trim().toLowerCase();
+            cleaned = cleaned.replace(/[.,№]/g, "");
+            return cleaned;
+        }
+        
         function startTimer(){
             setInterval(()=>{
                 let m = Math.floor(time/60);
@@ -139,6 +332,59 @@
                 if(time < 0){ window.location = "/result"; }
             },1000);
         }
+        
+        function handleAnswer(button) {
+            if(feedbackShown) return;
+            feedbackShown = true;
+            
+            const selectedOption = button.value;
+            const form = button.closest('form');
+            const feedbackDiv = document.getElementById('feedback');
+            const isCorrect = normalize(selectedOption) === normalize(correctAnswer);
+            
+            // Set the hidden input value
+            document.getElementById('selected_option_input').value = selectedOption;
+            
+            // Show feedback if in immediate mode
+            if(currentMode === "immediate") {
+                // Disable all buttons
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.6';
+                    btn.style.cursor = 'not-allowed';
+                });
+                
+                // Update feedback content
+                const icon = feedbackDiv.querySelector('.feedback-icon');
+                const text = feedbackDiv.querySelector('.feedback-text');
+                
+                if(isCorrect) {
+                    icon.textContent = '✓';
+                    icon.style.color = '#28a745';
+                    text.innerHTML = 'Правилен отговор!';
+                    text.style.color = '#28a745';
+                } else {
+                    icon.textContent = '✗';
+                    icon.style.color = '#dc3545';
+                    text.innerHTML = `Неправилен отговор<br><span style="font-size: 0.9em; font-weight: 500; margin-top: 8px; display: block;">Правилен: ${correctAnswer}</span>`;
+                    text.style.color = '#dc3545';
+                }
+                
+                // Show feedback with check or X mark
+                feedbackDiv.style.display = 'block';
+                
+                // Don't auto-submit, wait for user to click continue
+            } else {
+                form.submit();
+            }
+        }
+        
+        function continueQuiz() {
+            const form = document.querySelector('form');
+            document.getElementById('feedback').style.display = 'none';
+            form.submit();
+        }
+        
         window.onload = startTimer;
     </script>
 </head>
@@ -151,14 +397,21 @@
         </div>
 
         <form action="/answer" method="post">
+            <input type="hidden" id="selected_option_input" name="selected_option" value="">
             <div class="options">
                 {% for option in options %}
-                <button type="submit" name="selected_option" value="{{ option }}" class="option-btn">
+                <button type="button" class="option-btn" value="{{ option }}" onclick="handleAnswer(this);">
                     {{ option }}
                 </button>
                 {% endfor %}
             </div>
         </form>
+    </div>
+    
+    <div id="feedback">
+        <span class="feedback-icon">✓</span>
+        <div class="feedback-text">Правилен отговор!</div>
+        <button type="button" onclick="continueQuiz()">Продължи</button>
     </div>
 </body>
 </html>

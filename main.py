@@ -23,6 +23,7 @@ quiz_questions = []
 user_answers = []
 index = 0
 all_questions = []  # Store all loaded questions for generating wrong options
+quiz_mode = "final"  # "immediate" for instant feedback, "final" for results after test
 
 
 def normalize(text):
@@ -76,26 +77,35 @@ def home(request: Request):
 
 
 @app.post("/start")
-def start(source: str = Form("questions"), count: int = Form(3)):
-    global quiz_questions, user_answers, index, all_questions
+def start(selected_sources: str = Form("questions"), count: int = Form(3), mode: str = Form("final")):
+    global quiz_questions, user_answers, index, all_questions, quiz_mode
+    quiz_mode = mode
 
-    selected_source = next((item for item in source_files if item["key"] == source), source_files[0])
-    try:
-        questions = load_csv(selected_source["filename"])
-    except:
-        questions = []
-
+    # Parse the selected sources (comma-separated)
+    source_keys = [s.strip() for s in selected_sources.split(",") if s.strip()]
+    
+    # Load questions from all selected sources
+    all_loaded_questions = []
+    for source_key in source_keys:
+        selected_source = next((item for item in source_files if item["key"] == source_key), None)
+        if selected_source:
+            try:
+                questions = load_csv(selected_source["filename"])
+                all_loaded_questions.extend(questions)
+            except:
+                pass
+    
     requested_count = max(1, count)
-    sample_count = min(requested_count, len(questions))
-    quiz_questions = random.sample(questions, sample_count) if questions else []
-    all_questions = questions  # Store all questions for generating wrong options
+    sample_count = min(requested_count, len(all_loaded_questions))
+    quiz_questions = random.sample(all_loaded_questions, sample_count) if all_loaded_questions else []
+    all_questions = all_loaded_questions  # Store all questions for generating wrong options
     user_answers = []
     index = 0
 
     # Generate multiple choice options for each question
     for i, q in enumerate(quiz_questions):
         correct_answer = q["raw_answers"][0]  # First answer is the correct one
-        other_questions = [questions[j] for j in range(len(questions)) if questions[j]["question"] != q["question"]]
+        other_questions = [question for question in all_questions if question["question"] != q["question"]]
         
         # Get 3 random wrong answers from other questions
         wrong_answers = []
@@ -129,8 +139,10 @@ def quiz(request: Request):
         "request": request,
         "question": q["question"],
         "options": q["options"],
+        "correct_answer": q["correct_display"],
         "q_index": index + 1,
-        "total": len(quiz_questions)
+        "total": len(quiz_questions),
+        "mode": quiz_mode
     })
 
 
@@ -141,13 +153,15 @@ def answer(selected_option: str = Form(...)):
     cleaned_answer = normalize(selected_option)
     correct = quiz_questions[index]["answers"]
     correct_display = quiz_questions[index]["correct_display"]
+    is_correct = cleaned_answer in correct
+    
     user_answers.append({
         "question": quiz_questions[index]["question"],
         "user": selected_option,
         "user_normalized": cleaned_answer,
         "correct": correct_display,
         "correct_normalized": correct,
-        "is_correct": cleaned_answer in correct
+        "is_correct": is_correct
     })
 
     index += 1
